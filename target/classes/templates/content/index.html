@@ -1,0 +1,113 @@
+<!DOCTYPE html >
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="content/head :: heads"/>
+<body class="main_body">
+<!--
+<div class="layui-layout layui-layout-admin">
+    &lt;!&ndash; 顶部 &ndash;&gt;
+    <div th:include="content/header :: headers"/>
+    &lt;!&ndash; 左侧导航 &ndash;&gt;
+    <div th:include="content/left :: lefts"/>
+    &lt;!&ndash; 右侧内容 &ndash;&gt;
+    <div th:replace="content/right :: rights"/>
+    &lt;!&ndash; 底部 &ndash;&gt;
+    <div th:replace="content/footer :: footers"/>
+</div>
+-->
+<div class="layui-layout layui-layout-admin">
+    <!-- 头部-->
+    <div class="layui-header header" >
+        <div>
+            <a href="javascript:void(0);" class="logo">&nbsp;<span th:text="${wbeParameter.name}"></a>
+            <a href="javascript:;" class="seraph hideMenu layui-icon layui-icon-shrink-right"></a>
+            <a href="javascript:;" class="seraph  layui-icon refreshs layui-icon-refresh-3"
+               style="color: #FFFFFF;margin-left: 35px"></a>
+
+            <input id="test" th:value="${menuInfo}" type="hidden"/>
+            <!-- 显示/隐藏菜单图标 -->
+            <!-- 顶部右侧菜单 -->
+            <ul class="layui-nav top_menu">
+                <!--<li class="layui-nav-item">
+                    <a href="javascript:;" class="clearCache"><i class="layui-icon " data-icon="&#xe640;">&#xe640;</i><cite>清除缓存</cite><span class="layui-badge-dot"></span></a>
+                </li>-->
+                <li class="layui-nav-item">
+                    角色：<cite  th:text="${role}"></cite>&nbsp;&nbsp;&nbsp;&nbsp;
+                </li>
+
+             <li class="layui-nav-item">
+                 学工号：<cite  th:text="${user.userName}"></cite>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                 </li>
+                <li class="layui-nav-item">
+
+                    <a href="javascript:;"><i class="layui-icon layui-icon-screen-full" id="fullscreen"></i></a>
+                </li>
+                <li class="layui-nav-item" id="userInfo">
+
+                    <a href="javascript:;">
+
+                        <cite class="adminName" th:text="${user.realName}"></cite>
+                    </a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:;" data-url="/userInfo"><i
+                                class="layui-icon">&#xe620;</i><cite style="color: #0C0C0C">个人信息</cite></a></dd>
+                        <dd><a href="javascript:;" data-url="/changePwd"><i
+                                class="layui-icon layui-icon-edit"></i><cite style="color: #0C0C0C">修改密码</cite></a>
+                        </dd>
+                        <dd><a href="/logout.do" class="signOut"><i
+                                class="layui-icon layui-icon-close"></i><cite style="color: #0C0C0C">退出</cite></a>
+                        </dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!--左侧导航-->
+    <div class="layui-side layui-bg-black">
+        <div class="navBar layui-side-scroll" id="navBar">
+            <ul class="layui-nav layui-nav-tree">
+                <li class="layui-nav-item layui-this">
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!-- 右侧-->
+    <div class="layui-body layui-form">
+        <div class="layui-tab mag0" lay-filter="bodyTab" id="top_tabs_box">
+            <ul class="layui-tab-title top_tab" id="top_tabs">
+                <li class="layui-this" lay-id=""><i class="layui-icon">&#xe68e;</i></li>
+            </ul>
+            <ul class="layui-nav closeBox">
+                <li class="layui-nav-item">
+                    <a href="javascript:;"><i class="layui-icon caozuo">&#xe643;</i> 页面操作</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:;" class="refresh refreshThis"><i class="layui-icon"></i> 刷新当前</a></dd>
+                        <dd><a href="javascript:;" class="closePageOther"><i class="seraph icon-prohibit"></i> 关闭其他</a>
+                        </dd>
+                        <dd><a href="javascript:;" class="closePageAll"><i class="seraph icon-guanbi"></i> 关闭全部</a></dd>
+                    </dl>
+                </li>
+            </ul>
+            <!-- 首页的路径 -->
+            <div class="layui-tab-content clildFrame">
+                <div class="layui-tab-item layui-show">
+                    <iframe src="/main"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--底部-->
+    <div class="layui-footer footer">
+        <p><span th:text="${wbeParameter.name}">后台管理系统</span>　　
+        </p>
+    </div>
+</div>
+
+<!--  移动导航 -->
+<div class="site-tree-mobile"><i class="layui-icon">&#xe602;</i></div>
+<div class="site-mobile-shade"></div>
+<script type="text/javascript" src="../resource/common/layui/layui.js"></script>
+<script type="text/javascript" src="/resource/js/index.js"></script>
+<script type="text/javascript" src="/resource/js/cache.js"></script>
+<script type="text/javascript" src="/resource/js/bodyTab.js"></script>
+</body>
+</html>

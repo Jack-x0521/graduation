@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>菜单管理</title>
+    <meta name="renderer" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <link rel="stylesheet" href="/resource/common/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="/resource/css/common.css" media="all"/>
+</head>
+<style>
+
+    .layui-tree li i {
+        color: #0f8277;
+    }
+
+    .expa {
+        border-right: 6px solid #009688;
+        height: 934px;
+    }
+</style>
+<body>
+<div class="layui-row">
+    <div class="layui-col-md2 expa">
+        <!--树-->
+        <ul id="moduleTree" style="margin-top: 10px"></ul>
+    </div>
+    <div class="layui-col-md10">
+        <table id="moduleTables" lay-filter="moduleTables"></table>
+    </div>
+</div>
+<script type="text/html" id="operate">
+    <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del">删除</a>
+</script>
+
+
+<script type="text/html" id="header">
+    <div class="layui-btn-container" style="overflow: hidden">
+        <div style="float: right">
+            <button class="layui-btn layui-btn-sm" lay-event="addMenu">新增</button>
+        </div>
+    </div>
+</script>
+<script type="text/javascript" src="/resource/common/layui/layui.js"></script>
+<script type="text/javascript" th:inline="javascript">
+    layui.config({
+        base: '/resource/'
+    }).extend({
+        treetable: 'treetable-lay/treetable'
+    })
+    layui.use(['table', 'tree', 'layer', 'laydate', 'form', 'treetable'], function () {
+        var table = layui.table,
+            $ = layui.$,
+            layer = layui.layer,
+            form = layui.form;
+        var treetable = layui.treetable;
+        var sysList = [[${sysList}]];
+        console.log(sysList)
+        var permissionId;
+        //树
+        layui.tree({
+            elem: '#moduleTree' //传入元素选择器
+            , nodes: sysList
+            //点击函数
+            , click: function (node) {
+                console.log(node) //node即为当前点击的节点数据
+                permissionId = node.id;
+                active.reload();
+            }
+        });
+        //菜单列表
+        var tableIns = table.render({
+            elem: '#moduleTables'
+            , url: '/menu/menu.do' //数据接口
+            , method: 'get'
+            , toolbar: '#header'
+            , page: true //开启分页
+            , id: 'tableId'
+            , where: {
+                permissionId: permissionId
+            }
+            , limits: [10, 15, 30]
+            , limit: 15
+            , cols: [
+                [ //表头
+                    {'type': 'checkbox', 'fixed': 'left'}
+                    , {field: 'index', title: '序号'}
+                    , {field: 'permissionName', title: '资源名'}
+                    , {field: 'permissionMark', title: '权限标识'}
+                    , {field: 'permissionType', title: '资源类型'}
+                    , {field: 'url', title: 'url'}
+                    , {title: '操作', toolbar: '#operate', 'fixed': 'right'}
+                ]
+            ]
+        });
+
+        //监听用户列的头部工具
+        table.on('toolbar(moduleTables)', function (obj) {
+            var data = obj.data
+            if (obj.event == "addMenu") {
+                console.log(permissionId)
+                //新增用户
+                if (permissionId == null) {
+                    layer.alert("请选择父菜单后再进行操作！");
+                    return false;
+                }
+                layer.open({
+                    type: 2,
+                    title: "添加资源",
+                    shadeClose: false, //点击遮罩关闭层
+                    area: ['550px', '450px'],
+                    content: "/menu/addMenuHouser?parentId=" + permissionId
+                })
+            }
+        });
+
+        //监听用户列工具条
+        table.on('tool(moduleTables)', function (obj) {
+            var data = obj.data;
+            console.log(data);
+            if (obj.event == "del") {
+                layer.confirm('是否删除?', function (index) {
+                    $.ajax({
+                        url: "/menu/delMenu.do",
+                        type: "post",
+                        data: {"id": data.id},
+                        dataType: "json",
+                        success: function (result) {
+                            if (!result.status) {
+                                layer.msg(result.msg, {time: 2000});
+                                return false;
+                            }
+                            layer.msg("删除成功!", {time: 1000});
+                            active.reload();
+                        }
+                    });
+                    layer.close(index);
+                })
+            }
+        });
+
+        active = {
+            reload: function () {
+                //执行重载
+                table.reload('tableId', {
+                    page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+                    , where: {
+                        permissionId: permissionId
+                    }
+                });
+            }
+        };
+    });
+
+
+</script>
+
+</body>
+</html>

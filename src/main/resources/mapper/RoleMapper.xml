@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ahpu.mapper.RoleMapper">
+    <!-- 根据userId查询所拥有的角色列表 -->
+    <select id="selectRoleListByUserId" resultType="com.ahpu.entity.Role">
+		select gm_role.*from gm_role,gm_user_role where gm_user_role.userId =#{userId} and
+			gm_user_role.roleId =gm_role.id
+	</select>
+    <select id="slectRoleAndUser" resultType="java.lang.String">
+		select userId from gm_user_role where roleId =#{roleId}
+	</select>
+    <select id="slectPermissionAndUser" resultType="java.lang.String">
+		select permissionId from gm_role_permission where roleId =#{roleId}
+	</select>
+    <!--分配角色-->
+    <insert id="allotRole" parameterType="java.lang.String">
+		insert into gm_user_role (roleId,userId) values (#{roleId},#{userId})
+	</insert>
+
+    <delete id="delUser" parameterType="java.lang.String">
+		delete from  gm_user_role where roleId=#{roleId} and userId=#{userId}
+	</delete>
+
+    <delete id="delUserByUserId" parameterType="java.lang.String">
+		delete from  gm_user_role where userId=#{userId}
+	</delete>
+</mapper>

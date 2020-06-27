@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>用户管理</title>
+    <meta name="renderer" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <link rel="stylesheet" href="/resource/common/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="/resource/css/common.css" media="all"/>
+</head>
+<style>
+    .layui-form-item {
+        width: 350px;
+    }
+</style>
+<body>
+<blockquote class="layui-elem-quote layui-quote-nm">
+    <div class="layui-form">
+        <div class="layui-row " style="height: 50px;margin-top: 10px">
+            <div class="layui-col-md4">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">学工号：</label>
+                    <div class="layui-inline">
+                        <div class="layui-input-inline">
+                            <input type="text" id="userName" class="layui-input" placeholder=""/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md4 ">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">状态: </label>
+                    <div class="layui-inline" style="margin-top: -6px">
+                        <input type="radio" name="status" value="1" title="启用" checked="checked"/>
+                        <input type="radio" name="status" value="0" title="禁用"/>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md4">
+                <div class="layui-inline tableId" style="margin-top: -6px">
+                    <button class="layui-btn layui-btn-normal" data-type="reload" id="search"><i class="layui-icon">&#xe615;</i>搜索
+                    </button>
+                    <button class="layui-btn layui-btn-normal" data-type="reload" id="revocation"><i
+                            class="layui-icon">&#xe669;</i>撤销
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</blockquote>
+<table id="userTables" lay-filter="userTables"></table>
+<script type="text/html" id="operate">
+    <a class="layui-btn layui-btn-xs" lay-event="edit"><i class="layui-icon">修改</i></a>
+    <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del"><i class="layui-icon">删除</i></a>
+    {{#  if(d.status=='启用'){ }}
+    <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="forbidden">禁用</a>
+    {{#  } else if(d.status=='禁用'){ }}
+    <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="startUsing">启用</a>
+    {{#  } }}
+</script>
+<script type="text/html" id="header">
+    <div class="layui-btn-container" style="overflow: hidden">
+        <div style="float: right">
+            <button class="layui-btn layui-btn-sm" lay-event="addUser">新增用户</button>
+            <button class="layui-btn layui-btn-sm" lay-event="delUsers">删除选中</button>
+            <button class="layui-btn layui-btn-sm" id="test1">导入学生</button>
+            <button class="layui-btn layui-btn-sm" id="test2">导入教师</button>
+        </div>
+    </div>
+</script>
+<script type="text/javascript" src="/resource/common/layui/layui.js"></script>
+<script type="text/javascript" src=" /resource/js/user.js"></script>
+<script type="text/javascript">
+
+
+    layui.use(['table', 'layer', 'laydate', 'upload', 'form'], function () {
+        var table = layui.table,
+            $ = layui.$,
+            layer = layui.layer,
+            upload = layui.upload,
+            form = layui.form;
+        var tableIns = table.render({
+            elem: '#userTables'
+            , url: '/user/user.do' //数据接口
+            , method: 'get'
+            , toolbar: '#header'
+            , page: true //开启分页
+            , id: 'tableId'
+            , where: {
+                status: 1
+            }
+            , limits: [10, 15, 30]
+            , limit: 15
+            , cols: [
+                [ //表头
+                    {'type': 'checkbox', 'fixed': 'left'}
+                    , {field: 'index', title: '序号'}
+                    , {field: 'userName', title: '学工号'}
+                    , {field: 'realName', title: '姓名'}
+                    , {field: 'sex', title: '性别'}
+                    , {field: 'iphone', title: '手机号'}
+                    , {field: 'email', title: '电子邮件'}
+                    , {field: 'address', title: '联系地址'}
+                    , {field: 'createdDate', title: '创建时间'}
+                    , {field: 'updateDate', title: '最后一次登录时间'}
+                    , {field: 'status', title: '状态'}
+                    , {title: '操作', toolbar: '#operate', 'fixed': 'right', width: 210}
+                ]
+            ]
+        });
+        //搜索
+        $('#search').on('click', function () {
+            console.log("搜索执行")
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+        //撤销
+        $("#revocation").on('click', function () {
+            $("#userName").val("");
+            $("input[type='radio'][name='status']").attr("checked", false).get(0).checked = true;
+            form.render();
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : ''
+        });
+        table.on('toolbar(userTables)', function (obj) {
+            var datas = table.checkStatus("tableId").data;
+            if (obj.event == "addUser") {
+                //新增用户
+                layer.open({
+                    type: 2,
+                    title: "新增用户",
+                    shadeClose: false, //点击遮罩关闭层
+                    area: ['30%', '70%'],
+                    content: "/user/addUserHouser.do"
+                });
+                return false;
+            }
+            if (datas.length == 0) {
+                layer.alert("请选择数据后再进行操作！");
+            } else {
+                var ids = new Array();
+                for (d in datas) {
+                    ids.push(datas[d].id);
+                }
+                //删除选中
+                if (obj.event == "delUsers") {
+                    delUser(ids.toString());
+                }
+            }
+        });
+        //监听工具条
+        table.on('tool(userTables)', function (obj) {
+            var data = obj.data;
+            console.log(data);
+            if (obj.event === 'details') {
+                查看详情
+            } else if (obj.event === 'del') {
+                //删除
+                delUser(data.id);
+            } else if (obj.event === 'startUsing') {
+                //启用用户
+                editStatus(data.id, 1)
+            } else if (obj.event === "forbidden") {
+                //禁用用户
+                editStatus(data.id, 0)
+            } else if (obj.event === "edit") {
+                //修改用户
+                layer.open({
+                    type: 2,
+                    title: "修改用户",
+                    shadeClose: false, //点击遮罩关闭层
+                    area: ['30%', '70%'],
+                    content: "/user/editUserHouser.do?id=" + data.id
+                });
+            }
+        });
+        //指定允许上传的文件类型
+        upload.render({
+            elem: '#test1'
+            , url: '/importantStudent.do'
+            , accept: 'file' //普通文件
+            , done: function (res) {
+                if (res.status) {
+                    active.reload();
+                    return layer.msg(res.msg);
+                }
+                //上传成功
+            }
+        });
+        //指定允许上传的文件类型
+        upload.render({
+            elem: '#test2'
+            , url: '/importantTeacher.do'
+            , accept: 'file' //普通文件
+            , done: function (res) {
+                if (res.status) {
+                    active.reload();
+                    return layer.msg(res.msg);
+                }
+                //上传成功
+            }
+        });
+
+        active = {
+            reload: function () {
+                var userName = $("#userName").val();
+                var status = $('input:checked[name="status"]').val()
+                console.log(status);
+                //执行重载
+                table
+                    .reload('tableId', {
+                        url: '/user/user.do'
+                        , method: 'get'
+                        , page: {
+                            curr: 1 //重新从第 1 页开始
+                        }
+                        , where: {
+                            userName: userName,
+                            status: status,
+                        }
+                    });
+            }
+        };
+
+        //删除用户函数
+        function delUser(ids) {
+            layer.confirm('是否删除?', function (index) {
+                $.ajax({
+                    url: "/user/user.do",
+                    type: "post",
+                    data: {_method: "DELETE", "ids": ids},
+                    dataType: "json",
+                    success: function (result) {
+                        if (!result.status) {
+                            layer.msg(result.msg, {time: 2000});
+                            return false;
+                        }
+                        layer.msg("删除成功!", {time: 1000});
+                        active.reload();
+                    }
+                });
+                layer.close(index);
+            })
+        }
+
+        //更改用户状态函数
+        function editStatus(id, status) {
+            layer.confirm('确认更改用户状态?', function (index) {
+                $.ajax({
+                    url: "/user/status.do",
+                    type: "post",
+                    data: {"id": id, "status": status},
+                    dataType: "json",
+                    success: function (result) {
+                        if (!result.status) {
+                            layer.msg(result.msg, {time: 2000});
+                            return false;
+                        }
+                        layer.msg("更改成功!", {time: 1000});
+                        active.reload();
+                    }
+                });
+                layer.close(index);
+            })
+        }
+    });
+</script>
+
+</body>
+</html>

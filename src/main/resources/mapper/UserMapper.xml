@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ahpu.mapper.UserMapper">
+    <!-- 根据roleId查询旗下的所有用户-->
+    <select id="selectUserListByRoleId" resultType="com.ahpu.entity.User">
+		select gm_user.* from gm_user,gm_user_role where gm_user_role.roleId =#{roleId} and
+			gm_user_role.userId =gm_user.id
+	</select>
+</mapper>

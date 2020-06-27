@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>首页</title>
+    <meta name="renderer" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <link rel="stylesheet" href="/resource/common/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="/resource/common/layui/css/font-awesome.min.css" media="all"/>
+    <link rel="stylesheet" href="/resource/css/public.css" media="all"/>
+
+</head>
+<body>
+<style>
+    .layui-top-box {padding:40px 20px 20px 20px;color:#fff}
+    .panel {margin-bottom:17px;background-color:#fff;border:1px solid transparent;border-radius:3px;-webkit-box-shadow:0 1px 1px rgba(0,0,0,.05);box-shadow:0 1px 1px rgba(0,0,0,.05)}
+    .panel-body {padding:15px}
+    .panel-title {margin-top:0;margin-bottom:0;font-size:14px;color:inherit}
+    .label {display:inline;padding:.2em .6em .3em;font-size:75%;font-weight:700;line-height:1;color:#fff;text-align:center;white-space:nowrap;vertical-align:baseline;border-radius:.25em;margin-top: .3em;}
+    .main_btn > p {height:40px;}
+</style>
+<style>
+    .layui-card {border:1px solid #f2f2f2;border-radius:5px;}
+    .icon {margin-right:10px;color:#1aa094;}
+    .icon-blue {color:#1e9fff!important;}
+    .layuimini-qiuck-module {text-align:center;margin-top: 10px}
+    .layuimini-qiuck-module a i {display:inline-block;width:100%;height:60px;line-height:60px;text-align:center;border-radius:2px;font-size:30px;background-color:#F8F8F8;color:#333;transition:all .3s;-webkit-transition:all .3s;}
+    .layuimini-qiuck-module a cite {position:relative;top:2px;display:block;color:#666;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;font-size:14px;}
+    .welcome-module {width:100%;height:210px;}
+    .panel {background-color:#fff;border:1px solid transparent;border-radius:3px;-webkit-box-shadow:0 1px 1px rgba(0,0,0,.05);box-shadow:0 1px 1px rgba(0,0,0,.05)}
+    .panel-body {padding:10px}
+    .panel-title {margin-top:0;margin-bottom:0;font-size:12px;color:inherit}
+    .label {display:inline;padding:.2em .6em .3em;font-size:75%;font-weight:700;line-height:1;color:#fff;text-align:center;white-space:nowrap;vertical-align:baseline;border-radius:.25em;margin-top: .3em;}
+    .main_btn > p {height:40px;}
+
+</style>
+<script type="text/javascript">
+function changeFrameHeight(){
+var ifm= document.getElementById("mainiframe");
+ifm.height=document.documentElement.clientHeight-56;
+}
+window.onresize=function(){ changeFrameHeight();}
+$(function(){
+    changeFrameHeight();
+});
+
+
+</script>
+
+<div class="layui-tab-item layui-show">
+
+
+</div>
+
+<div class="layui-box">
+    <div class="layui-row layui-col-space10">
+        <div class="layui-col-md8">
+            <div class="layui-card">
+                <div class="layui-card-header"><i class="fa fa-credit-card icon icon-blue"></i>快捷入口</div>
+                <div class="layui-card-body">
+                    <div class="welcome-module">
+                        <div class="layui-row layui-col-space15 layuimini-qiuck">
+
+                            <div class="layui-col-xs3 layuimini-qiuck-module">
+                                <a href="/issue/index.do" data-title="系统设置" data-icon="fa fa-gears">
+                                    <i class="fa fa-list-ol"></i>
+                                    <cite>选题列表</cite>
+                                </a>
+                            </div>
+                            <div class="layui-col-xs3 layuimini-qiuck-module">
+                                <a href="/distribution/index.do" data-title="申报课题列表" data-icon="fa fa-file-text">
+                                    <i class="fa fa-list-ul"></i>
+                                    <cite>申报课题列表</cite>
+                                </a>
+                            </div>
+                            <div class="layui-col-xs3 layuimini-qiuck-module">
+                                <a href="/file/index.do" data-title="文档列表" data-icon="fa fa-dot-circle-o">
+                                    <i class="fa fa-file"></i>
+                                    <cite>文档列表</cite>
+                                </a>
+                            </div>
+                            <div class="layui-col-xs3 layuimini-qiuck-module">
+                                <a href="/reply/index.do" data-title="查看答辩组" data-icon="fa fa-calendar">
+                                    <i class="fa fa-calendar"></i>
+                                    <cite>查看答辩组</cite>
+                                </a>
+                            </div>
+
+                            <div class="layui-col-xs3 layuimini-qiuck-module">
+                                <a href="/distribution/look.do" data-title="查看成绩" data-icon="fa fa-search">
+                                    <i class="fa fa-search"></i>
+                                    <cite>查看成绩</cite>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+
+<div class="layui-box">
+    <div class="layui-row layui-col-space10">
+<div class="layui-col-md6">
+    <ul class="layui-timeline">
+        <li class="layui-timeline-item">
+            <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+            <div class="layui-timeline-content layui-text">
+                <h3 class="layui-timeline-title"></h3>
+                <p>
+                    如果选择某导师的课题未被通过或已经被他人选择，请尽快选择其他课题，注意及时关注个人选题状态
+                </p>
+            </div>
+        </li>
+        <li class="layui-timeline-item">
+            <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+            <div class="layui-timeline-content layui-text">
+                <h3 class="layui-timeline-title"></h3>
+                <p>所有的修改项，如果已经被审核则不再允许修改
+                </p>
+
+            </div>
+        </li>
+        <li class="layui-timeline-item">
+            <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+            <div class="layui-timeline-content layui-text">
+                <h3 class="layui-timeline-title"></h3>
+                <p>
+                    使用原始密码登录的同学，请尽快更改密码
+                </p>
+            </div>
+        </li>
+        <li class="layui-timeline-item">
+            <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+            <div class="layui-timeline-content layui-text">
+                <div class="layui-timeline-title"></div>
+            </div>
+        </li>
+    </ul>
+</div>
+</div>
+</div>
+
+</div>
+<script src="/resource/js/config/jquery-1.7.2.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="/resource/common/layui/layui.js"></script>
+<script>
+
+</script>
+<script type="text/javascript" th:inline="javascript">
+
+</script>
+</body>
+</html>
+

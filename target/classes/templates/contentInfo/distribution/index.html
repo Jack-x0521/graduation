@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>申报课题</title>
+    <meta name="renderer" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <link rel="stylesheet" href="/resource/common/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="/resource/css/common.css" media="all"/>
+</head>
+<style>
+    .layui-form-item {
+        width: 350px;
+
+    }
+</style>
+<body>
+<table id="tables" lay-filter="tables" lay-skin="line"></table>
+<!--<shiro:hasPermission name="button:student:index:edit">-->
+<script type="text/html" id="operate">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
+    {{#  if(d.state=='等待指导教师审核' && d.isStudent){ }}
+    <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del"><i class="layui-icon"></i>删除</a>
+    <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="edit"><i class="layui-icon"></i>编辑</a>
+    {{#  } }}
+    {{#  if(d.state=='确认不通过' && d.isStudent){ }}
+    <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="edit"><i class="layui-icon"></i>修改</a>
+    {{#  } }}
+    {{#  if(d.state=='等待指导教师审核' && d.isTeacher){ }}
+    <a class="layui-btn layui-btn-xs " lay-event="yes"><i class="layui-icon"></i>通过</a>
+    <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="no"><i class="layui-icon"></i>不通过</a>
+    {{#  } }}
+</script>
+<script type="text/html" id="header" th:if="${isTeacher}">
+    <div class="layui-btn-container" style="overflow: hidden">
+        <div>
+            <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="yes"><i class="layui-icon">&#xe654;</i>批量通过
+            </button>
+            <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="no"><i class="layui-icon">&#xe654;</i>批量不通过
+            </button>
+        </div>
+    </div>
+</script>
+<!--</shiro:hasPermission>-->
+<script type="text/javascript" src="/resource/common/layui/layui.js"></script>
+<script type="text/javascript" src=" /resource/js/user.js"></script>
+<script type="text/javascript" th:inline="javascript">
+    layui.use(['table', 'layer', 'laydate', 'form'], function () {
+        var table = layui.table,
+            $ = layui.$,
+            layer = layui.layer,
+            form = layui.form;
+        var tableIns = table.render({
+            elem: '#tables'
+            , skin: 'line' //行边框风格
+            , even: true //开启隔行背景
+            , size: 'lg' //尺寸的表格
+            , url: '/distribution/distribution.do' //数据接口
+            , method: 'get'
+            , where: {'type': '申报课题'}
+            , toolbar: '#header'
+            , page: true //开启分页
+            , id: 'tableId'
+            , limits: [10, 15, 30]
+            , limit: 15
+            , cols: [
+                [ //表头
+                    {'type': 'checkbox', 'fixed': 'left'}
+                    , {field: 'name', title: '课题名称'}
+                    , {field: 'ask', title: '基本要求'}
+                    , {field: 'information', title: '参考资料'}
+                    , {field: 'introduction', title: '题目简介'}
+                    , {field: 'research', title: '研究方向'}
+                    // , {field: 'teacher', title: '工号'}
+                    , {field: 'teacherName', title: '指导教师'}
+                    , {field: 'student', title: '学号'}
+                    , {field: 'studentName', title: '学生'}
+                    , {field: 'stateTitle', title: '状态'}
+                    , {field: 'time', title: '申报时间'}
+                    , {title: '操作', toolbar: '#operate', 'fixed': 'right', width: 230}
+                ]
+            ]
+        });
+        //搜索
+        $('#search').on('click', function () {
+            console.log("搜索执行")
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+        //撤销
+        $("#revocation").on('click', function () {
+            $("#name").val('');
+            form.render();
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : ''
+        });
+        table.on('toolbar(tables)', function (obj) {
+            var datas = table.checkStatus("tableId").data;
+            if (datas.length == 0) {
+                layer.alert("请选择数据后再进行操作！");
+            } else {
+                var ids = new Array();
+                for (d in datas) {
+                    ids.push(datas[d].id);
+                }
+                //删除选中
+                if (obj.event == "yes") {
+                    batchEditEntity(ids.toString(), "确认通过");
+                } else if (obj.event == "no") {
+                    batchEditEntity(ids.toString(), "确认不通过");
+                }
+            }
+        });
+        //监听工具条
+        table.on('tool(tables)', function (obj) {
+            var data = obj.data;
+            console.log(data);
+            if(obj.event === 'detail'){
+
+
+                layer.open({
+                    type: 1,
+                    title: '<html><center ></html>'+'详细信息'+'<html></center></html>',
+                    closeBtn: 0,
+                    skin: 'layui-table', //样式类名
+                    shadeClose: true,
+                    area: '700px',
+                    content:
+
+                        '<html><table class="layui-table" ><center><thead> <tr><th></html>'+ '课题名称：'+'<html></th><th></html>'+ data.name +'<html></th></tr></html>'+
+                        '<html><th></html>'+ '基本要求：'+'<html></th><th></html>'+ data.ask +'<html></th></tr></html>'+
+                        '<html><th></html>'+ '参考资料：'+'<html></th><th></html>'+ data.information +'<html></th></tr></html>'+
+                        '<html><th></html>'+ '题目简介：'+'<html></th><th></html>'+ data.introduction +'<html></th></tr></html>'+
+                        '<html><th></html>'+ '研究方向：'+'<html></th><th></html>'+ data.research +'<html></th></tr></html>'+
+                        '<html><th></html>'+ '指导教师：'+'<html></th><th></html>'+ data.teacherName +'<html></th></tr></html>'+
+                        '<html><th></html>'+ '学号：'+'<html></th><th></html>'+ data.student +'<html></th></tr></html>'+
+                        '<html><th></html>'+ '学生：'+'<html></th><th></html>'+ data.studentName +'<html></th></tr></html>'+
+                        '<html><th></html>'+ '状态：'+'<html></th><th></html>'+ data.stateTitle +'<html></th></tr></html>'+
+
+                        '<html><th></html>'+ '申报时间：'+'<html></th><th></html>'+ data.time+'<html></th></tr> </thead></center></table></html>'
+
+                });
+            }
+            if (obj.event === 'del') {
+                //删除
+                delEntity(data.id);
+            } else if (obj.event === 'edit') {
+                //删除
+                layer.open({
+                    type: 2,
+                    title: "编辑",
+                    maxmin: true,
+                    shadeClose: true, //点击遮罩关闭层
+                    area: ['100%', '100%'],
+                    content: "/distribution/editPage.do?id=" + data.id
+                });
+            } else if (obj.event === 'yes') {
+                editEntity(data.id, "确认通过")
+            } else if (obj.event === 'no') {
+                editEntity(data.id, "确认不通过")
+            }
+        });
+        active = {
+            reload: function () {
+                var name = $("#name").val();
+                //执行重载
+                table.reload('tableId', {
+                    page: {
+                        curr: 1
+                    }
+                    , where: {
+                        name: name,
+                    }
+                });
+            }
+        };
+
+        //删除函数
+        function delEntity(id) {
+            layer.confirm('是否删除?', function (index) {
+                $.ajax({
+                    url: "/distribution/distribution.do",
+                    type: "post",
+                    data: {_method: "DELETE", "id": id},
+                    dataType: "json",
+                    success: function (result) {
+                        if (!result.status) {
+                            layer.msg(result.msg, {time: 2000});
+                            return false;
+                        }
+                        layer.msg("删除成功!", {time: 1000});
+                        active.reload();
+                    }
+                });
+                layer.close(index);
+            })
+        }
+
+        //删除函数
+        function editEntity(id, state) {
+            $.ajax({
+                url: "/distribution/edit.do",
+                type: "put",
+                data: {"id": id, "state": state},
+                dataType: "json",
+                success: function (result) {
+                    if (!result.status) {
+                        layer.msg(result.msg, {time: 2000});
+                        return false;
+                    }
+                    parent.layer.msg("操作成功!", {time: 1000});
+                    active.reload();
+                }
+            });
+        }
+
+        //删除函数
+        function batchEditEntity(ids, state) {
+            $.ajax({
+                url: "/distribution/batchEdit.do",
+                type: "put",
+                data: {"ids": ids, "state": state},
+                dataType: "json",
+                success: function (result) {
+                    if (!result.status) {
+                        layer.msg(result.msg, {time: 2000});
+                        return false;
+                    }
+                    parent.layer.msg("操作成功!", {time: 1000});
+                    active.reload();
+                }
+            });
+        }
+    });
+</script>
+
+</body>
+</html>

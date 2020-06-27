@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>个人资料 </title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="../resource/common/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="../resource/css/public.css" media="all"/>
+</head>
+<body class="childrenBody">
+<form class="layui-form layui-row">
+    <div class="layui-col-md3 layui-col-xs12 user_right">
+        <div class="layui-upload-list">
+            <img th:src="${user.imgUrl}" class="layui-upload-img layui-circle userFaceBtn userAvatar" id="userFace">
+        </div>
+        <input name="imgUrl" th:value="${user.imgUrl}" hidden id="imgUrl"/>
+        <button type="button" id="text1" class="layui-btn layui-btn-primary userFaceBtn"><i
+                class="layui-icon">&#xe67c;</i>
+            掐指一算，我要换照片
+        </button>
+    </div>
+    <div class="layui-col-md6 layui-col-xs12">
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户名</label>
+            <div class="layui-input-block">
+                <input hidden name="id" th:value="${user.id}">
+                <input type="text" value="" name="userName" th:value="${user.userName}" disabled
+                       class="layui-input layui-disabled">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">真实姓名</label>
+            <div class="layui-input-block">
+                <input type="text" value="" name="realName" th:value="${user.realName}" disabled placeholder="请输入真实姓名"
+                       lay-verify="required"
+                       class="layui-input realName">
+            </div>
+        </div>
+        <div class="layui-form-item" pane="">
+            <label class="layui-form-label">性别</label>
+            <div class="layui-input-block userSex">
+                <select name="sex">
+                    <option th:selected="${user.sex} eq '男'">男</option>
+                    <option th:selected="${user.sex} eq '女'">女</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">手机号码</label>
+            <div class="layui-input-block">
+                <input type="tel" value="" name="iphone" th:value="${user.iphone}" placeholder="请输入手机号码"
+                       lay-verify="phone"
+                       class="layui-input userPhone">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">联系地址</label>
+            <div class="layui-input-block">
+                <input type="text" value="" name="address" th:value="${user.address}" lay-verify="userBirthday"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">邮箱</label>
+            <div class="layui-input-block">
+                <input type="text" name="email" placeholder="请输入邮箱" th:value="${user.email}" lay-verify="email"
+                       class="layui-input userEmail">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit="" lay-filter="Submit">立即修改</button>
+            </div>
+        </div>
+    </div>
+</form>
+<script type="text/javascript" src="/resource/common/layui/layui.js"></script>
+<script type="text/javascript" src=" /resource/js/user.js"></script>
+<script type="text/javascript">
+
+
+    layui.use(['table', 'layer', 'laydate', 'form', 'upload', 'laypage'], function () {
+        var table = layui.table,
+            $ = layui.$,
+            layer = layui.layer,
+            upload = layui.upload,
+            laypage = layui.laypage,
+            form = layui.form;
+        var uploadInst = upload.render({
+            elem: '#text1'
+            , url: '/upload.do'
+            , before: function (obj) {
+                //预读本地文件示例，不支持ie8
+                obj.preview(function (index, file, result) {
+                    console.log(result)
+                    $('#userFace').attr('src', result); //图片链接（base64）
+                });
+            }
+            , done: function (res) {
+                console.log(res)
+                //如果上传失败
+                if (!res.status) {
+                    return layer.msg('上传失败');
+                }
+                $("#imgUrl").val(res.obje);
+                return layer.msg('上传成功');
+            }
+            , error: function () {
+                //演示失败状态，并实现重传
+                var demoText = $('#demoText');
+                demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload">重试</a>');
+                demoText.find('.demo-reload').on('click', function () {
+                    uploadInst.upload();
+                });
+            }
+        });
+        form.on('submit(Submit)', function (data) {
+            $.ajax({
+                url: '/user/user.do',
+                type: 'put',
+                data: data.field,
+                dataType: 'json',
+                async: false,
+                success: function (result) {
+                    if (result.status) {
+                        parent.layer.msg("编辑成功!", {time: 1000});
+                        parent.layer.close(parent.layer.getFrameIndex(window.name));
+                        parent.layui.table.reload('tableId', {});
+                    } else {
+                        layer.msg(status.msg);
+                    }
+                }
+
+            });
+        });
+    });
+
+</script>
+</body>
+</html>

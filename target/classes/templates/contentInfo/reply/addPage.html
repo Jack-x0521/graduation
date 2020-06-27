@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>安排答辩组</title>
+    <meta name="renderer" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <link rel="stylesheet" href="/resource/common/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="/resource/css/public.css" media="all"/>
+    <link href="/resource/css/front/step.css" rel="stylesheet">
+    <script src="/resource/common/layui/xm-select/xm-select.js"></script>
+</head>
+<style>
+    .layui-elem-quote {
+        background-color: white;
+        line-height: 0px;
+    }
+
+    .blockquote-span {
+        font-size: 12px;
+        color: #c2c2c2;
+        margin-left: 10px
+    }
+</style>
+<body>
+<div class="layui-form layui-form-pane" style="margin:auto;margin-top:30px;width: 90%">
+    <div class="layui-form-item">
+        <blockquote class="layui-elem-quote">答辩组</blockquote>
+        <div class="layui-input-block" style="margin-left: 1px">
+            <input type="text" name="name" autocomplete="off" placeholder=""
+                   lay-verify="required"
+                   class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <blockquote class="layui-elem-quote">答辩地点
+        </blockquote>
+        <div class="layui-input-block" style="margin-left: 1px">
+            <input type="text" name="place" autocomplete="off" placeholder=""
+                   lay-verify="required"
+                   class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <blockquote class="layui-elem-quote">开始答辩时间
+        </blockquote>
+        <div class="layui-input-block" style="margin-left: 1px">
+            <input type="text" name="time" id="time" autocomplete="off" placeholder=""
+                   lay-verify="required"
+                   class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <blockquote class="layui-elem-quote">答辩组组长
+        </blockquote>
+        <div class="layui-input-block" style="margin-left: 1px">
+<!--            <select name="groupUser">-->
+<!--                <option></option>-->
+<!--                <option th:each="teacher:${groupList}" th:value="${teacher.userName}"-->
+<!--                        th:text="${teacher.realName}"></option>-->
+<!--            </select>-->
+            <div id="groupUser" style="width: 413px; margin: 1px;" class="xm-select-demo"></div>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">答辩组教师</label>
+        <div class="layui-input-block">
+            <div id="teachers" style="width: 413px; margin: 1px;" class="xm-select-demo"></div>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">答辩学生</label>
+        <div class="layui-input-block">
+            <div id="students"  style="width: 413px; margin: 1px;" class="xm-select-demo" ></div>
+
+        </div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formStep" >
+                &emsp;立即提交&emsp;
+            </button>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/javascript" src="/resource/common/layui/layui.js"></script>
+<script src="/resource/js/step.js"></script>
+<script type="text/javascript" th:inline="javascript">
+    layui.config({
+        base: '/resource/common/layui/xm-select/'
+    }).extend({
+        xmSelect: 'xm-select'
+    }).use(['table', 'layer', 'laydate', 'upload', 'xmSelect', 'form', 'layedit'], function () {
+        var table = layui.table,
+            $ = layui.$,
+            layer = layui.layer,
+            laydate = layui.laydate,
+            xmSelect = layui.xmSelect,
+            upload = layui.upload,
+            layedit = layui.layedit,
+            form = layui.form
+        laydate.render({
+            elem: '#time'
+            , type: 'datetime'
+        })
+
+
+        var teacherList = [[${teacherList}]];
+        var studentList = [[${studentList}]];
+        var studentsName = [[${studentsName}]];
+        //渲染多选
+        var groupUser = xmSelect.render({
+            el: '#groupUser',
+
+            toolbar: {
+                show: true,
+            },
+            data: teacherList,
+            filterable: true,
+            paging: true,
+            autoRow: true,
+            }
+        )
+        var students = xmSelect.render({
+            el: '#students',
+            toolbar: {
+                show: true,
+            },
+            data: studentList,
+            filterable: true,
+            paging: true,
+            autoRow: true,
+
+
+
+        })
+
+        var teachers = xmSelect.render({
+            el: '#teachers',
+            toolbar: {
+                show: true,
+            },
+            data: teacherList,
+            filterable: true,
+            paging: true,
+            autoRow: true,
+
+        })
+
+        form.on('submit(formStep)', function (data) {
+            var studentsVal = [];
+            var studentsNameVal = [];
+            var teachersVal = [];
+            var groupUserVal =[];
+            $.each(groupUser.getValue(), function (idx, obj) {
+                groupUserVal.push(obj.value)
+            });
+            $.each(students.getValue(), function (idx, obj) {
+                studentsVal.push(obj.value)
+            });
+
+            $.each(students.getValue(), function (idx, obj) {
+
+                studentsNameVal.push(obj.name)
+            });
+            $.each(teachers.getValue(), function (idx, obj) {
+                teachersVal.push(obj.value)
+            });
+
+            data.field.groupUser = groupUserVal.toString()
+            data.field.students = studentsVal.toString()
+            data.field.studentsName = studentsNameVal.toString()
+            data.field.teachers = teachersVal.toString()
+            console.log(data.field)
+            $.ajax({
+                url: '/reply/reply.do',
+                type: 'post',
+                data: data.field,
+                dataType: 'json',
+                async: false,
+                success: function (result) {
+                    if (!result.status) {
+                        layer.msg(result.msg, {time: 2000});
+                        return false;
+                    } else {
+                        layer.msg("提交成功!", {
+                            time: 900,
+                            end: function () {
+                                location.reload()
+                            }
+                        })
+
+                    }
+                }
+            });
+        });
+    });
+
+</script>
+
+</body>
+</html>

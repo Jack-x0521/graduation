@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>日志管理</title>
+    <meta name="renderer" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <link rel="stylesheet" href="/resource/common/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="/resource/css/common.css" media="all"/>
+</head>
+<style>
+    .layui-form-item {
+        width: 350px;
+    }
+</style>
+<body>
+<blockquote class="layui-elem-quote layui-quote-nm">
+    <div class="layui-form">
+        <div class="layui-row " style="height: 50px;margin-top: 10px">
+            <div class="layui-col-md3">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">用户名：</label>
+                    <div class="layui-inline">
+                        <div class="layui-input-inline">
+                            <input name="userName" id="userName" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <div class="layui-inline tableId" style="margin-top: -6px">
+                    <button class="layui-btn layui-btn-normal" data-type="reload" id="search"><i class="layui-icon">&#xe615;</i>搜索
+                    </button>
+                    <button class="layui-btn layui-btn-normal" data-type="reload" id="revocation"><i
+                            class="layui-icon">&#xe669;</i>撤销
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</blockquote>
+<table id="logTables" lay-filter="logTables"></table>
+<!--<shiro:hasPermission name="button:student:index:edit">-->
+<script type="text/html" id="operate">
+    <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del">删除</a>
+</script>
+<!--</shiro:hasPermission>-->
+<script type="text/javascript" src="/resource/common/layui/layui.js"></script>
+<script type="text/javascript" src=" /resource/js/user.js"></script>
+<script type="text/javascript" th:inline="javascript">
+    layui.use(['table', 'layer', 'laydate', 'form'], function () {
+        var table = layui.table,
+            $ = layui.$,
+            layer = layui.layer,
+            form = layui.form;
+        var tableIns = table.render({
+            elem: '#logTables'
+            , url: '/log/log.do' //数据接口
+            , method: 'get'
+            , toolbar: '#header'
+            , page: true //开启分页
+            , id: 'tableId'
+            , limits: [10, 15, 30]
+            , limit: 15
+            , cols: [
+                [ //表头
+                    {field: 'userName', title: '用户名'}
+                    , {field: 'time', title: '记录时间'}
+                    , {field: 'operation', title: '相关操作'}
+                    , {title: '操作', toolbar: '#operate', 'fixed': 'right'}
+                ]
+            ]
+        });
+        //搜索
+        $('#search').on('click', function () {
+            console.log("搜索执行")
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+        //撤销
+        $("#revocation").on('click', function () {
+            $("#type").val("");
+            form.render();
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : ''
+        });
+        //监听工具条
+        table.on('tool(logTables)', function (obj) {
+            var data = obj.data;
+            console.log(data);
+            if (obj.event === 'del') {
+                //删除
+                dellog(data.id);
+            }
+        });
+        active = {
+            reload: function () {
+                var userName = $("#userName").val();
+                //执行重载
+                table
+                    .reload('tableId', {
+                        page: {
+                            curr: 1 //重新从第 1 页开始
+                        }
+                        , where: {
+                            userName: userName,
+                        }
+                    });
+            }
+        };
+
+        //删除用户函数
+        function dellog(id) {
+            layer.confirm('是否删除?', function (index) {
+                $.ajax({
+                    url: "/log/log.do",
+                    type: "post",
+                    data: {_method: "DELETE", "id": id},
+                    dataType: "json",
+                    success: function (result) {
+                        if (!result.status) {
+                            layer.msg(result.msg, {time: 2000});
+                            return false;
+                        }
+                        layer.msg("删除成功!", {time: 1000});
+                        active.reload();
+                    }
+                });
+                layer.close(index);
+            })
+        }
+    });
+</script>
+
+</body>
+</html>

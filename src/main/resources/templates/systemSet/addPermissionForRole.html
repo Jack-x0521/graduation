@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>添加角色权限</title>
+    <meta name="renderer" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <link rel="stylesheet" href="/resource/common/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="/resource/css/common.css" media="all"/>
+</head>
+
+<body class="index">
+<blockquote class="layui-elem-quote quoteBox">
+    <div class="layui-form">
+        <div>
+            资源类型：
+            <div class="layui-inline">
+                <div class="layui-input-inline">
+                    <select id="permissionType" name="modules" lay-verify="required" lay-search="">
+                        <option value="">直接选择或搜索选择</option>
+                        <option value="menu">menu</option>
+                        <option value="button">button</option>
+                        <option value="subsystem">subsystem</option>
+                    </select>
+                </div>
+            </div>
+            资源名：
+            <div class="layui-inline">
+                <div class="layui-input-inline">
+                    <input type="text" id="permissionName" class="layui-input" placeholder=""/>
+                </div>
+            </div>
+            <div class="layui-inline tableId" style="margin-top: -10px">
+                <button class="layui-btn" data-type="reload" id="search">搜索</button>
+                <button class="layui-btn revocation" data-type="reload" id="revocation">撤销</button>
+            </div>
+        </div>
+    </div>
+</blockquote>
+<table id="permissionTables" lay-filter="permissionTables"></table>
+<script type="text/html" id="header">
+    <div class="layui-btn-container" style="overflow: hidden">
+        <div style="float: right">
+            <button class="layui-btn layui-btn-sm" lay-event="addUsers">添加选中</button>
+        </div>
+    </div>
+</script>
+<script type="text/javascript" src="/resource/common/layui/layui.js"></script>
+<script type="text/javascript" src=" /resource/js/user.js"></script>
+<script type="text/javascript" th:inline="javascript">
+
+
+    layui.use(['table', 'layer', 'laydate', 'form'], function () {
+        var table = layui.table,
+            $ = layui.$,
+            layer = layui.layer,
+            form = layui.form
+        var roleId = [[${roleId}]];
+        var tableIns = table.render({
+            elem: '#permissionTables'
+            , cellMinWidth: 100
+            , url: '/permission/permissionForTable.do' //数据接口
+            , method: 'get'
+            , toolbar: '#header'
+            , id: 'tableId'
+            , where: {
+                roleId: roleId
+            }
+            , cols: [
+                [ //表头
+                    {'type': 'checkbox', 'fixed': 'left'}
+                    , {field: 'permissionName', title: '资源名'}
+                    , {field: 'permissionType', title: '类型'}
+                    , {field: 'url', title: '资源路径'}
+                ]
+            ]
+        });
+        //搜索
+        $('#search').on('click', function () {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+        //撤销
+        $('#revocation').on('click', function () {
+            $('#permissionName').val("");
+            $("#permissionType option:first").prop("selected", true);
+            form.render();
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+        table.on('toolbar(permissionTables)', function (obj) {
+            var datas = table.checkStatus("tableId").data;
+            if (datas.length == 0) {
+                layer.alert("请选择数据后再进行操作！");
+            } else {
+                var ids = new Array();
+                for (d in datas) {
+                    ids.push(datas[d].id);
+                }
+                //添加选中
+                if (obj.event == "addUsers") {
+                    console.log(ids)
+                    addPermission(ids.toString());
+                }
+            }
+        });
+
+        //添加用户函数
+        function addPermission(ids) {
+            layer.confirm('是否添加?', function (index) {
+                $.ajax({
+                    url: "/permission/addPermission.do",
+                    type: "post",
+                    data: {"ids": ids, "roleId": roleId},
+                    dataType: "json",
+                    success: function (result) {
+                        if (!result.status) {
+                            layer.msg(result.msg, {time: 2000});
+                            return false;
+                        }
+                        layer.msg("添加!", {time: 1000});
+                        parent.tools.func1(roleId);
+                    }
+                });
+                parent.layer.close(parent.layer.getFrameIndex(window.name));
+                layer.close(index)
+            })
+        }
+
+        active = {
+            reload: function () {
+                var permissionType = $('#permissionType').val();
+                var permissionName = $('#permissionName').val();
+                //执行重载
+                table.reload('tableId', {
+                    where: {
+                        permissionName: permissionName,
+                        permissionType: permissionType,
+                        roleId: roleId
+                    }
+                });
+            }
+        };
+    });
+
+</script>
+
+</body>
+</html>

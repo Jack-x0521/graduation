@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ahpu.mapper.PermissionMapper">
+    <select id="getMenuInfoByUserId" resultType="com.ahpu.entity.Menu">
+		select p.PermissionID as menuId,p.PermissionName as menuName,p.URL as menuURL,p.ParentID as perentMenuId,
+		p.Available as available,p.Description as menuDesc,p.PermissionMark as menuMark,p.PermissionType,p.Priority,
+		p.CreateTime,p.LastTime from gm_role_permission,gm_user_role,gm_permission p
+		LEFT JOIN gm_permission pa on p.parentId = pa.PermissionID
+		WHERE
+		p.PermissionType='menu' and p.Available=1 and p.PermissionMark not like '%Mobile%'
+		and gm_role_permission.permissionId=p.permissionId and gm_role_permission.roleId=gm_user_role.roleId and gm_user_role.userId=#{userId}
+		ORDER BY p.CreateTime
+	</select>
+
+    <select id="getSubSystemInfoByUserId" parameterType="java.lang.String"
+            resultType="com.ahpu.entity.SubSystemInfo">
+			select distinct gm_permission.permissionId as subSystemId,gm_permission.permissionName as subSystemName from gm_permission,gm_role_permission,gm_user_role where permissionType = 'subsystem' and gm_role_permission.permissionId=gm_permission.permissionId
+			and gm_role_permission.roleId=gm_user_role.roleId and gm_user_role.userId=#{userId}
+			order by priority
+	</select>
+    <select id="getSubSystemInfo"
+            resultType="com.ahpu.entity.SubSystemInfo">
+				select permissionId as subSystemId,permissionName as subSystemName from gm_permission where permissionType = 'subsystem'
+		order by priority
+	</select>
+    <!-- 根据角色查找所有的权限 -->
+    <select id="selectPermissionByRoleId" resultType="com.ahpu.entity.Permission">
+		select distinct gm_permission.* from gm_permission,gm_role_permission
+			where gm_role_permission.roleId=#{roleId} and gm_role_permission.permissionId=gm_permission.permissionId
+	</select>
+    <!--分配权限-->
+    <insert id="allotPermission" parameterType="java.lang.String">
+		insert into gm_role_permission (roleId,permissionId) values (#{roleId},#{permissionId})
+	</insert>
+
+    <delete id="delPermission" parameterType="java.lang.String">
+		delete from  gm_role_permission where roleId=#{roleId} and permissionId=#{permissionId}
+	</delete>
+    <delete id="delPermissionByPermissionId" parameterType="java.lang.String">
+		delete from  gm_role_permission where  permissionId=#{permissionId}
+	</delete>
+</mapper>

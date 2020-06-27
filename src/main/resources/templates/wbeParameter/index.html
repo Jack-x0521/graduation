@@ -1,0 +1,126 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <link rel="stylesheet" href="/resource/common/layui/css/layui.css" media="all"/>
+</head>
+<body style="padding: 20px; background-color: #F2F2F2;">
+<div>
+    <div class="layui-card">
+        <div class="layui-card-header">网站设置</div>
+        <div class="layui-card-body">
+            <div class="layui-form">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">网站名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="name" lay-verify="name" th:value=${wbeParameter.name}
+                               autocomplete="off"
+                               placeholder="请输入网站名称"
+                               class="layui-input">
+                    </div>
+                </div>
+
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">联系方式</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="iphone" lay-verify="required" th:value=${wbeParameter.iphone}
+                               placeholder="请输入联系方式"
+                               autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">邮箱</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="email" lay-verify="required" th:value=${wbeParameter.email}
+                               placeholder="请输入邮箱"
+                               autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <input th:value="${wbeParameter.id}" name="id" hidden=""/>
+                        <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="/resource/common/layui/layui.js"></script>
+<script type="text/javascript">
+
+
+    layui.use(['layer', 'layedit', 'form', 'upload',], function () {
+        var table = layui.table,
+            $ = layui.$,
+            layer = layui.layer,
+            upload = layui.upload,
+            layedit = layui.layedit,
+            form = layui.form;
+        form.on('submit(demo1)', function (data) {
+            $.ajax({
+                url: '/wbeSet/wbeParameter.do',
+                type: 'put',
+                data: data.field,
+                dataType: 'json',
+                async: false,
+                success: function (result) {
+                    if (result.status) {
+                        layer.msg("修改成功!")
+                    } else {
+                        alert("修改失败!")
+                    }
+                }
+
+            });
+        });
+        layedit.set({
+            //暴露layupload参数设置接口 --详细查看layupload参数说明
+            uploadImage: {
+                url: '/layeditUpload.do',
+                accept: 'image',
+                acceptMime: 'image/*',
+                exts: 'jpg|png|gif|bmp|jpeg',
+                size: '10240'
+            }
+            , uploadVideo: {
+                url: '/layeditUpload.do',
+                accept: 'video',
+                acceptMime: 'video/*',
+                exts: 'mp4|flv|avi|rm|rmvb',
+                size: '20480'
+            }
+            //右键删除图片/视频时的回调参数，post到后台删除服务器文件等操作，
+            //传递参数：
+            //图片： imgpath --图片路径
+            //视频： filepath --视频路径 imgpath --封面路径
+            , calldel: {
+                url: '/Attachment/DeleteFile'
+            }
+            //开发者模式 --默认为false
+            , devmode: true
+            //插入代码设置
+            , codeConfig: {
+                hide: true,  //是否显示编码语言选择框
+                default: 'javascript' //hide为true时的默认语言格式
+            }
+            , tool: [
+                'code', 'strong', 'italic', 'underline', 'del', 'addhr', '|', 'fontFomatt', 'colorpicker', 'face'
+                , '|', 'left', 'center', 'right', '|', 'link', 'unlink', 'images', 'image_alt', 'video', 'anchors'
+                , '|', 'table', 'fullScreen']
+
+        });
+        var index = layedit.build('aboutMe', {
+            height: 400 //设置编辑器高度
+        });
+    });
+
+</script>
+</body>
+</html>

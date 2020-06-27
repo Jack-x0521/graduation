@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>通知信息</title>
+    <meta name="renderer" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <link rel="stylesheet" href="/resource/common/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="/resource/css/common.css" media="all"/>
+</head>
+<style>
+    .layui-form-item {
+        width: 350px;
+    }
+</style>
+<body>
+<blockquote class="layui-elem-quote layui-quote-nm">
+    <div class="layui-form">
+        <div class="layui-row " style="height: 50px;margin-top: 10px">
+            <div class="layui-col-md3">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">标题：</label>
+                    <div class="layui-inline">
+                        <div class="layui-input-inline">
+                            <input name="name" id="name" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md3">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">分类：</label>
+                    <div class="layui-inline">
+                        <div class="layui-input-inline">
+                            <select class="layui-select" id="categoryName">
+                                <option></option>
+                                <option th:each="categorie:${categories}" th:value="${categorie.name}"
+                                        th:text="${categorie.name}"></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md2">
+                <div class="layui-inline tableId" style="margin-top: -6px">
+                    <button class="layui-btn layui-btn-normal" data-type="reload" id="search"><i class="layui-icon">&#xe615;</i>搜索
+                    </button>
+                    <button class="layui-btn layui-btn-normal" data-type="reload" id="revocation"><i
+                            class="layui-icon">&#xe669;</i>撤销
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</blockquote>
+<table id="tables" lay-filter="tables"></table>
+
+<script type="text/html" id="operate">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
+    <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del"><i class="layui-icon"></i>删除</a>
+    <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="edit"><i class="layui-icon"></i>编辑</a>
+</script>
+<script type="text/html" id="header">
+    <div class="layui-btn-container" style="overflow: hidden">
+        <div>
+            <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="add"><i class="layui-icon">&#xe654;</i>添加
+            </button>
+        </div>
+    </div>
+</script>
+
+<script type="text/javascript" src="/resource/common/layui/layui.js"></script>
+<script type="text/javascript" src=" /resource/js/user.js"></script>
+<script type="text/javascript" th:inline="javascript">
+    layui.use(['table', 'layer', 'laydate', 'form'], function () {
+        var table = layui.table,
+            $ = layui.$,
+            layer = layui.layer,
+            form = layui.form;
+        var tableIns = table.render({
+            elem: '#tables'
+            , skin: 'line' //行边框风格
+            , even: true //开启隔行背景
+            , size: 'lg' //尺寸的表格
+            , url: '/news/newsTable.do' //数据接口
+            , method: 'get'
+            , toolbar: '#header'
+            , page: true //开启分页
+            , id: 'tableId'
+            , limits: [10, 15, 30]
+            , limit: 15
+            , cols: [
+                [ //表头
+                    {field: 'categoryName', title: '分类名称'}
+                    , {field: 'name', title: '标题'}
+                    // , {field: 'userName', title: '发布人学工号'}
+                    , {field: 'content', title: '内容'}
+                    , {field: 'realName', title: '发布人'}
+                    , {field: 'time', title: '上传时间'}
+                    , {title: '操作', toolbar: '#operate', 'fixed': 'right', width: 230}
+                ]
+            ]
+        });
+        //搜索
+        $('#search').on('click', function () {
+            console.log("搜索执行")
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+        //撤销
+        $("#revocation").on('click', function () {
+            $("#categoryName").val('');
+            $("#name").val('');
+            form.render();
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : ''
+        });
+        table.on('toolbar(tables)', function (obj) {
+            if (obj.event == "add") {
+                //新增
+                layer.open({
+                    type: 2,
+                    title: "添加",
+                    maxmin: true,
+                    shadeClose: true, //点击遮罩关闭层
+                    area: ['600px', '500px'],
+                    content: "/news/addNews.do"
+                });
+            }
+        });
+        //监听工具条
+        table.on('tool(tables)', function (obj) {
+            var data = obj.data;
+            console.log(data);
+            if(obj.event === 'detail'){
+
+
+                layer.open({
+                    type: 1,
+                    title: '<html><center ></html>'+'详细信息'+'<html></center></html>',
+                    closeBtn: 0,
+                    skin: 'layui-table', //样式类名
+                    shadeClose: true,
+                    area: '700px',
+                    content:
+
+                        '<html><table class="layui-table" ><center><thead> <tr><th></html>'+ '分类名称：'+'<html></th><th></html>'+ data.categoryName +'<html></th></tr></html>'+
+                        '<html><th></html>'+ '标题：'+'<html></th><th></html>'+ data.name +'<html></th></tr></html>'+
+                        '<html><th></html>'+ '内容：'+'<html></th><th></html>'+ data.content +'<html></th></tr></html>'+
+                        '<html><th></html>'+ '发布人：'+'<html></th><th></html>'+ data.realName +'<html></th></tr></html>'+
+
+
+
+                        '<html><th></html>'+ '上传时间：'+'<html></th><th></html>'+ data.time+'<html></th></tr> </thead></center></table></html>'
+
+
+
+
+                });
+            }
+            if (obj.event === 'del') {
+                //删除
+                delEntity(data.id);
+            } else if (obj.event === 'edit') {
+                layer.open({
+                    type: 2,
+                    title: "编辑",
+                    maxmin: true,
+                    shadeClose: true, //点击遮罩关闭层
+                    area: ['600px', '500px'],
+                    content: "/news/editNews.do?id=" + data.id
+                });
+            }
+        });
+        active = {
+            reload: function () {
+                var name = $("#name").val();
+                var categoryName = $("#categoryName").val();
+                //执行重载
+                table.reload('tableId', {
+                    page: {
+                        curr: 1
+                    }
+                    , where: {
+                        name: name,
+                        categoryName: categoryName,
+                    }
+                });
+            }
+        };
+
+        //删除函数
+        function delEntity(id) {
+            layer.confirm('是否删除?', function (index) {
+                $.ajax({
+                    url: "/news/news.do",
+                    type: "post",
+                    data: {_method: "DELETE", "id": id},
+                    dataType: "json",
+                    success: function (result) {
+                        if (!result.status) {
+                            layer.msg(result.msg, {time: 2000});
+                            return false;
+                        }
+                        layer.msg("删除成功!", {time: 1000});
+                        active.reload();
+                    }
+                });
+                layer.close(index);
+            })
+        }
+    });
+</script>
+
+</body>
+</html>

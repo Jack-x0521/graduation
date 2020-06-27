@@ -1,0 +1,49 @@
+/*20190901*/
+/*调整input、select、textarea和btn的高度*/
+.layui-input, .layui-select, .layui-textarea, .layui-btn{
+    height:25px !important;
+    line-height:25px !important;
+}
+/**/
+.layui-input-block{
+    min-height:25px !important;
+}
+/*调整select及input等前面的label样式*/
+.layui-form-label{
+    padding:3px 15px !important;
+}
+
+/*table表格的行高*/
+.layui-table-view .layui-table td, .layui-table-view .layui-table th{
+    padding:2px 0;
+}
+/**/
+.layui-table-view{
+    margin:5px 0;
+}
+/*查询框的样式*/
+.layui-elem-quote{
+    padding:5px ;
+    margin-bottom: 0 ;
+}
+/*调整每行之间的距离*/
+.layui-form-item{
+    margin-bottom:0 !important;
+}
+
+.childrenBody{
+    font-size:12px !important;
+}
+/*调整表头样式*/
+.layui-table-tool{
+    padding:0 15px !important;
+    min-height:36px !important;
+}
+/*调整表头中工具栏的样式*/
+.layui-table-tool-self{
+    top:2px !important;
+}
+/*调整表头中按钮的样式*/
+.layui-btn{
+    margin-bottom: -5px !important;
+}

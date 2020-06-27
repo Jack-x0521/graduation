@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title th:text="${wbeParameter.name}"></title>
+    <link rel="stylesheet" href="../resource/common/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="../resource/css/login(1).css" media="all"/>
+    <link rel="stylesheet" href="../resource/css/public.css" media="all"/>
+    <style>
+        /* 覆盖原框架样式 */
+        .layui-elem-quote {
+            background-color: inherit !important;
+        }
+
+        .layui-input, .layui-select, .layui-textarea {
+            background-color: inherit;
+            padding-left: 30px;
+        }
+    </style>
+</head>
+<body style="background: url('../resource/image/loginBg.jpg');no-repeat; background-size:100% 100%; background-attachment:fixed;'}">
+<a href="/"><h1 th:text="${wbeParameter.name}" style="color: white;padding: 20px 0px 0px 20px"></h1></a>
+<div style="padding: 20px;width: 67%;position: absolute;top: 10.5%">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md6">
+            <div class="layui-card">
+                <div class="layui-card-header" style="color: #3289a4;font-weight: bolder">
+                    <span>通知公告</span><a href="/front/news.do?categoryName=通知公告" style="float: right;color: #3289a4">MORE>></a>
+                </div>
+                <div class="layui-card-body" style="height: 200px">
+                    <p th:each="notice:${noticeList}" style="border-bottom: 1px dashed #e2e2e2"><a
+                            th:href="${'/front/newsDetails.do?id='+notice.id}"
+                            th:text="${'✧'+notice.name}"></a><span style="float: right"
+                                                                   th:text="${#strings.substring(notice.time,0,11)}"></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md6">
+            <div class="layui-card">
+                <div class="layui-card-header" style="color: #3289a4;font-weight: bolder"><span>使用手册</span><a
+                        href="/front/news.do?categoryName=使用手册"
+                        style="float: right;color: #3289a4">MORE>></a></div>
+                <div class="layui-card-body" style="height: 200px">
+                    <p th:each="manual:${manualList}" style="border-bottom: 1px dashed #e2e2e2"><a
+                            th:href="${'/front/newsDetails.do?id='+manual.id}"
+                            th:text="${'✧'+manual.name}"></a><span style="float: right"
+                                                                   th:text="${#strings.substring(manual.time,0,11)}"></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- LoginForm -->
+<div class="zyl_lofo_main" style="right: 5%;background-color: white;width: 350px;top: 13%">
+    <div style="padding: 12px 12px 0px 0px;border-bottom: 1px solid #e2e2e2;width: 88%;margin-left: 14px">
+        <p style="font-weight: bold;border-bottom: 2px solid #3289a4;width: 125px"><span style="padding-left: 20px">账号密码登录</span>
+        </p>
+    </div>
+    <div class="layui-row layui-col-space15" style="margin-top: 2px">
+        <div class="layui-form zyl_pad_01" action="">
+            <div class="layui-col-sm12 layui-col-md12">
+                <div class="layui-form-item">
+                    <input type="text" name="userName" lay-verify="required|userName" autocomplete="off"
+                           placeholder="账号" class="layui-input" style="background-color: #FFFFFF;width: 100%">
+                    <i class="layui-icon layui-icon-username zyl_lofo_icon"></i>
+                </div>
+            </div>
+            <div class="layui-col-sm12 layui-col-md12">
+                <div class="layui-form-item">
+                    <input type="password" name="password" lay-verify="required|pass" autocomplete="off"
+                           placeholder="密码"
+                           class="layui-input" style="background-color: #FFFFFF;width: 100%">
+                    <i class="layui-icon layui-icon-password zyl_lofo_icon"></i>
+                </div>
+            </div>
+            <div class="layui-col-sm12 layui-col-md12">
+                <div class="layui-row">
+                    <div class="layui-col-xs7 layui-col-sm7 layui-col-md7">
+                        <div class="layui-form-item">
+                            <input type="text" name="vercode" id="vercode" lay-verify="required|vercodes"
+                                   autocomplete="off" placeholder="验证码" class="layui-input" maxlength="4"
+                                   style="background-color: #FFFFFF">
+                            <i class="layui-icon layui-icon-vercode zyl_lofo_icon"></i>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs4 layui-col-sm4 layui-col-md4">
+                        <div class="zyl_lofo_vercode zylVerCode" id="discode" onclick="createCode()"
+                             style="cursor:pointer;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-sm12 layui-col-md12">
+                <button class="layui-btn layui-btn-fluid" lay-submit="" lay-filter="demo1"
+                        style="background-color: #3289a4">立即登录
+                </button>
+            </div>
+            <div class="layui-col-sm12 layui-col-md12" style="margin-top: 20px;">
+                <div class="layui-form-item" style="line-height: 27px">
+                    <p><i class="layui-icon">&#xe678;</i><span style="padding-left: 10px"
+                                                               th:text="${wbeParameter.iphone}"></span></p>
+                    <p><i class="layui-icon">&#xe63a;</i><span style="padding-left: 10px"
+                                                               th:text="${wbeParameter.email}">517-1100556</span></p>
+                    <p><i class="layui-icon">&#xe613;</i><span style="padding-left: 4px"
+                                                               th:text="${wbeParameter.name}"></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- LoginForm End -->
+
+
+<!-- Jquery Js -->
+<script src="/resource/js/config/jquery-1.7.2.min.js" type="text/javascript"></script>
+<!-- Layui Js -->
+<script type="text/javascript" src="/resource/common/layui/layui.js"></script>
+
+<script>
+    layui.use(['carousel', 'form'], function () {
+        var carousel = layui.carousel
+            , form = layui.form;
+
+        //自定义验证规则
+        form.verify({
+            userName: function (value) {
+                if (value.length < 5) {
+                    return '账号至少得5个字符';
+                }
+            }
+            , pass: [/^[\S]{1,12}$/, '密码必须6到12位，且不能出现空格']
+            , vercodes: function (value) {
+                //获取验证码
+                var zylVerCode = $(".zylVerCode").html();
+                if (value != zylVerCode) {
+                    return '验证码错误!';
+                }
+            }
+            , content: function (value) {
+                layedit.sync(editIndex);
+            }
+        });
+
+        //监听提交
+        form.on('submit(demo1)', function (data) {
+            $.ajax({
+                url: '/login.do',
+                type: 'post',
+                dataType: 'json',
+                data: data.field,
+                async: false,
+                success: function (result) {
+                    console.log(result)
+                    if (result.status) {
+                        location.href = "/indexShiro";
+                    } else {
+                        layer.msg(result.msg, {time: 2000});
+                    }
+                }
+
+            });
+        });
+    });
+
+</script>
+<!--验证码-->
+<script language="javascript">
+    var code; //在全局 定义验证码
+    $(function () {
+        createCode()
+    })
+
+    function createCode() { //创建验证码函数
+        code = "";
+        var codeLength = 4;//验证码的长度
+        var selectChar = new Array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k',
+            'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z');//所有候选组成验证码的字符，当然也可以用中文的
+        for (var i = 0; i < codeLength; i++) {
+            var charIndex = Math.floor(Math.random() * 36);
+            code += selectChar[charIndex];
+        }
+// 设置验证码的显示样式，并显示
+        document.getElementById("discode").style.fontFamily = "Fixedsys"; //设置字体
+        document.getElementById("discode").style.letterSpacing = "5px"; //字体间距
+        document.getElementById("discode").style.color = "#3289a4"; //字体颜色
+        document.getElementById("discode").innerHTML = code; // 显示
+    }
+
+</script>
+</body>
+</html>

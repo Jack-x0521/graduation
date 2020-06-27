@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>修改密码--layui后台管理模板 2.0</title>
+    <meta name="renderer" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <link rel="stylesheet" href="/resource/common/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="/resource/css/public.css" media="all"/>
+    <link href="/resource/css/front/step.css" rel="stylesheet">
+</head>
+<style>
+    .layui-elem-quote {
+        background-color: white;
+        line-height: 0px;
+    }
+
+    .blockquote-span {
+        font-size: 12px;
+        color: #c2c2c2;
+        margin-left: 10px
+    }
+</style>
+<body>
+<div class="layui-form layui-form-pane" style="margin:auto;margin-top:30px;width: 90%">
+    <div class="layui-form-item">
+        <blockquote class="layui-elem-quote">课题题目<span class="blockquote-span">按照学校的要求,在下方输入相关内容,若无内容请填写'无'</span>
+        </blockquote>
+        <div class="layui-input-block" style="margin-left: 1px">
+            <input type="text" name="name" th:value="${distribution.name}" autocomplete="off" placeholder="请输入课题题目"
+                   lay-verify="required"
+                   class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <blockquote class="layui-elem-quote">指导教师<span class="blockquote-span">按照学校的要求,在下方输入相关内容,若无内容请填写'无'</span>
+        </blockquote>
+        <div class="layui-input-block" style="margin-left: 1px">
+            <select name="teacher">
+                <option></option>
+                <option th:each="teacher:${teacherList}" th:selected="${distribution.teacher eq teacher.realName}"
+                        th:value="${teacher.realName}"
+                        th:text="${teacher.realName}"></option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item layui-form-text">
+        <blockquote class="layui-elem-quote">研究方向<span class="blockquote-span">按照学校的要求,在下方输入相关内容,若无内容请填写'无'</span>
+        </blockquote>
+        <div class="layui-input-block">
+                                    <textarea placeholder="请输入内容" name="research" th:text="${distribution.research}"
+                                              class="layui-textarea" style="width: 100%"></textarea>
+        </div>
+    </div>
+    <div class="layui-form-item layui-form-text">
+        <blockquote class="layui-elem-quote">题目简介<span class="blockquote-span">按照学校的要求,在下方输入相关内容,若无内容请填写'无'</span>
+        </blockquote>
+        <div class="layui-input-block">
+                                    <textarea placeholder="请输入内容" name="introduction"
+                                              th:text="${distribution.introduction}"
+                                              class="layui-textarea" style="width: 100%"></textarea>
+        </div>
+    </div>
+    <div class="layui-form-item layui-form-text">
+        <blockquote class="layui-elem-quote">基本要求<span class="blockquote-span">按照学校的要求,在下方输入相关内容,若无内容请填写'无'</span>
+        </blockquote>
+        <div class="layui-input-block">
+                                    <textarea placeholder="请输入内容" name="ask" th:text="${distribution.ask}"
+                                              class="layui-textarea" style="width: 100%"></textarea>
+        </div>
+    </div>
+    <div class="layui-form-item layui-form-text">
+        <blockquote class="layui-elem-quote">参考资料<span class="blockquote-span">按照学校的要求,在下方输入相关内容,若无内容请填写'无'</span>
+        </blockquote>
+        <div class="layui-input-block">
+                                    <textarea placeholder="请输入内容" name="information"
+                                              th:text="${distribution.information}"
+                                              class="layui-textarea" style="width: 100%"></textarea>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <input hidden name="id" th:value="${distribution.id}">
+            <button class="layui-btn" lay-submit lay-filter="formStep">
+                &emsp;立即提交&emsp;
+            </button>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="/resource/common/layui/layui.js"></script>
+<script src="/resource/js/step.js"></script>
+<script type="text/javascript">
+    layui.use(['table', 'layer', 'laydate', 'upload', 'form', 'layedit'], function () {
+        var table = layui.table,
+            $ = layui.$,
+            layer = layui.layer,
+            laydate = layui.laydate,
+            upload = layui.upload,
+            layedit = layui.layedit,
+            form = layui.form
+        //日期时间选择器
+        laydate.render({
+            elem: '#beginTime'
+            , type: 'datetime'
+        })  //日期时间选择器
+        laydate.render({
+            elem: '#stopTime'
+            , type: 'datetime'
+        })
+        form.on('submit(formStep)', function (data) {
+            $.ajax({
+                url: '/distribution/distribution.do',
+                type: 'put',
+                data: data.field,
+                dataType: 'json',
+                async: false,
+                success: function (result) {
+                    if (!result.status) {
+                        layer.msg(result.msg, {time: 2000});
+                        return false;
+                    } else {
+                        parent.layer.msg("修改成功!", {time: 1000});
+                        parent.layer.close(parent.layer.getFrameIndex(window.name));
+                        parent.layui.table.reload('tableId', {});
+                    }
+                }
+            });
+        });
+    });
+
+</script>
+
+</body>
+</html>

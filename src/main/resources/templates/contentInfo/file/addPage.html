@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>提交文档</title>
+    <meta name="renderer" content="webkit"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <link rel="stylesheet" href="/resource/common/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="/resource/css/public.css" media="all"/>
+    <link href="/resource/css/front/step.css" rel="stylesheet">
+</head>
+<style>
+    .layui-elem-quote {
+        background-color: white;
+        line-height: 0px;
+    }
+
+    .blockquote-span {
+        font-size: 12px;
+        color: #c2c2c2;
+        margin-left: 10px
+    }
+</style>
+<body>
+<div class="layui-form layui-form-pane" style="margin:auto;margin-top:30px;width: 90%">
+    <div class="layui-form-item">
+        <blockquote class="layui-elem-quote">课题题目
+        </blockquote>
+        <div class="layui-input-block" style="margin-left: 1px">
+            <input type="text" name="name" th:value=${distribution.name} autocomplete="off" readonly placeholder=""
+                   lay-verify="required"
+                   class="layui-input layui-disabled">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <blockquote class="layui-elem-quote">指导教师
+        </blockquote>
+        <div class="layui-input-block" style="margin-left: 1px">
+            <input type="text" name="teacher" th:value=${distribution.teacher} autocomplete="off" readonly
+                   placeholder=""
+                   lay-verify="required"
+                   class="layui-input layui-disabled">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <blockquote class="layui-elem-quote">文档类型
+        </blockquote>
+        <div class="layui-input-block" style="margin-left: 1px">
+            <select name="type">
+                <option>开题报告</option>
+                <option>中期报告</option>
+                <option>指导记录</option>
+                <option>毕业设计（论文）</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item layui-form-text">
+        <blockquote class="layui-elem-quote">简述开题以来所做的具体工作和取得的进展成果
+        </blockquote>
+        <div class="layui-input-block">
+                                    <textarea placeholder="请输入内容" name="work"
+                                              class="layui-textarea" style="width: 100%"></textarea>
+        </div>
+    </div>
+    <div class="layui-form-item layui-form-text">
+        <blockquote class="layui-elem-quote">下一步的主要任务以及进度安排
+        </blockquote>
+        <div class="layui-input-block">
+                                    <textarea placeholder="请输入内容" name="task"
+                                              class="layui-textarea" style="width: 100%"></textarea>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <blockquote class="layui-elem-quote">添加附件
+        </blockquote>
+        <div class="layui-input-block" style="margin-left: 1px">
+            <input type="text" name="url" id="url" autocomplete="off" readonly placeholder=""
+
+                   class="layui-input ">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            <button class="layui-btn" lay-submit lay-filter="formStep">
+                &emsp;立即提交&emsp;
+            </button>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="/resource/common/layui/layui.js"></script>
+<script src="/resource/js/step.js"></script>
+<script type="text/javascript">
+    layui.use(['table', 'layer', 'laydate', 'upload', 'form', 'layedit'], function () {
+        var table = layui.table,
+            $ = layui.$,
+            layer = layui.layer,
+            laydate = layui.laydate,
+            upload = layui.upload,
+            layedit = layui.layedit,
+            form = layui.form
+        //普通图片上传
+        upload.render({
+            elem: '#url'
+            , url: '/upload.do'
+            , accept: 'file'
+            , done: function (res) {
+                //如果上传失败
+                if (res.code > 0) {
+                    return layer.msg('上传失败');
+                }
+                $("#url").val(res.obje);
+                return layer.msg('上传成功');
+            }
+            , error: function () {
+                return layer.msg('上传失败');
+            }
+        });
+        form.on('submit(formStep)', function (data) {
+            $.ajax({
+                url: '/file/file.do',
+                type: 'post',
+                data: data.field,
+                dataType: 'json',
+                async: false,
+                success: function (result) {
+                    if (!result.status) {
+                        layer.msg(result.msg, {time: 2000});
+                        return false;
+                    } else {
+                        layer.msg("提交成功!", {
+                            time: 900,
+                            end: function () {
+                                location.reload()
+
+                            }
+                        })
+
+
+                    }
+                }
+            });
+        });
+    });
+
+</script>
+
+</body>
+</html>

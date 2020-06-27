@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="201224" />
+        <module name="case" />
+        <module name="graduation" />
+        <module name="graduation3.3" />
+        <module name="graduation3.2" />
+        <module name="graduation3.1" />
+        <module name="graduation7.3" />
+        <module name="graduation3.5" />
+        <module name="graduation8" />
+        <module name="graduation4.2" />
+      </profile>
+    </annotationProcessing>
+  </component>
+</project>
